@@ -4,7 +4,7 @@
   "description": "Employee Management System for Agricultural Businesses",
   "start_url": "/",
   "display": "standalone",
-  "display_override": ["window-controls-overlay"],
+  "display_override": ["window-controls-overlay", "minimal-ui"],
   "background_color": "#ffffff",
   "theme_color": "#4CAF50",
   "orientation": "portrait",
@@ -133,6 +133,10 @@
     "notifications",
     "background-sync",
     "periodic-sync"
-  ]
+  ],
+  "handle_links": "preferred",
+  "edge_side_panel": {
+    "preferred_width": 400
+  }
 }
 

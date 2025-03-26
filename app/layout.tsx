@@ -82,9 +82,18 @@ export default function RootLayout({
         <meta name="msapplication-tap-highlight" content="no" />
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
         <meta name="format-detection" content="telephone=no" />
-        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
         <meta name="display" content="standalone" />
-        <meta name="display-override" content="window-controls-overlay" />
+        <meta name="display-override" content="window-controls-overlay, minimal-ui" />
+        <style>{`
+          :root {
+            --safe-area-inset-top: env(safe-area-inset-top);
+            --safe-area-inset-bottom: env(safe-area-inset-bottom);
+          }
+          body {
+            padding-top: var(--safe-area-inset-top);
+            padding-bottom: var(--safe-area-inset-bottom);
+          }
+        `}</style>
       </head>
       <body className={inter.className}>
         <AuthProvider>
