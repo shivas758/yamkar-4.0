@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Yamkar Icon Generator</title>
+</head>
+<body>
+    <canvas id="iconCanvas" width="512" height="512"></canvas>
+    <script>
+        const canvas = document.getElementById('iconCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // Set background
+        ctx.fillStyle = '#4CAF50'; // A professional green color
+        ctx.fillRect(0, 0, 512, 512);
+
+        // Add a circular highlight
+        ctx.beginPath();
+        ctx.arc(256, 256, 200, 0, 2 * Math.PI);
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
+        ctx.fill();
+
+        // Add text
+        ctx.font = 'bold 180px Arial';
+        ctx.fillStyle = '#ffffff';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('Y', 256, 256);
+
+        // Add a subtle border
+        ctx.strokeStyle = 'rgba(0, 0, 0, 0.1)';
+        ctx.lineWidth = 20;
+        ctx.strokeRect(10, 10, 492, 492);
+
+        // Function to download the canvas as PNG
+        function downloadIcon() {
+            const link = document.createElement('a');
+            link.download = 'icon-512x512.png';
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        }
+
+        // Download automatically
+        downloadIcon();
+    </script>
+</body>
+</html> 
