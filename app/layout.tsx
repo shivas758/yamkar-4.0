@@ -78,7 +78,30 @@ export default function RootLayout({
         <meta name="application-name" content="Yamkar" />
         <meta name="msapplication-TileColor" content="#4CAF50" />
         <meta name="msapplication-tap-highlight" content="no" />
-        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+        <meta name="format-detection" content="telephone=no" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        <style jsx global>{`
+          :root {
+            --safe-area-inset-top: env(safe-area-inset-top);
+            --safe-area-inset-bottom: env(safe-area-inset-bottom);
+          }
+          body {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            min-height: -webkit-fill-available;
+            background-color: #ffffff;
+            overscroll-behavior: none;
+          }
+          html {
+            height: -webkit-fill-available;
+          }
+          #__next {
+            min-height: 100vh;
+            min-height: -webkit-fill-available;
+          }
+        `}</style>
       </head>
       <body className={inter.className}>
         <AuthProvider>

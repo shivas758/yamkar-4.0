@@ -110,6 +110,11 @@
     "background-sync",
     "periodic-sync",
     "geolocation"
-  ]
+  ],
+  "display_override": ["window-controls-overlay", "standalone", "minimal-ui"],
+  "handle_links": "preferred",
+  "edge_side_panel": {
+    "preferred_width": 400
+  }
 }
 
