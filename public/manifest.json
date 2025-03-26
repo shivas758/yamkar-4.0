@@ -1,31 +1,13 @@
 {
   "name": "Yamkar",
   "short_name": "Yamkar",
-  "description": "Agricultural Employee Management System",
+  "description": "Employee Management System for Agricultural Businesses",
   "start_url": "/",
-  "id": "com.yamkar.app",
-  "display": "fullscreen",
+  "display": "standalone",
+  "display_override": ["window-controls-overlay"],
   "background_color": "#ffffff",
   "theme_color": "#4CAF50",
   "orientation": "portrait",
-  "categories": ["business", "productivity", "utilities"],
-  "launch_handler": {
-    "client_mode": ["focus-existing", "auto"]
-  },
-  "screenshots": [
-    {
-      "src": "/screenshots/home.png",
-      "sizes": "1080x1920",
-      "type": "image/png",
-      "platform": "narrow",
-      "label": "Home Screen"
-    }
-  ],
-  "prefer_related_applications": false,
-  "scope": "/",
-  "iarc_rating_id": "e84b072d-71b3-4d3e-86ae-31a8ce4e53b7",
-  "lang": "en",
-  "dir": "ltr",
   "icons": [
     {
       "src": "/icons/icon-72x72.png",
@@ -88,33 +70,69 @@
       "purpose": "maskable"
     }
   ],
-  "shortcuts": [
+  "screenshots": [
     {
-      "name": "Mark Attendance",
-      "short_name": "Attendance",
-      "description": "Mark attendance for employees",
-      "url": "/attendance",
-      "icons": [{ "src": "/icons/icon-96x96.png", "sizes": "96x96" }]
+      "src": "/screenshots/home.png",
+      "sizes": "1080x1920",
+      "type": "image/png",
+      "platform": "narrow",
+      "label": "Home Screen"
     }
   ],
+  "categories": ["business", "productivity", "utilities"],
+  "shortcuts": [
+    {
+      "name": "Attendance",
+      "short_name": "Attendance",
+      "description": "Mark attendance",
+      "url": "/attendance",
+      "icons": [{ "src": "/icons/attendance.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Reports",
+      "short_name": "Reports",
+      "description": "View reports",
+      "url": "/reports",
+      "icons": [{ "src": "/icons/reports.png", "sizes": "192x192" }]
+    }
+  ],
+  "file_handlers": [
+    {
+      "action": "/handle-file",
+      "accept": {
+        "application/pdf": [".pdf"],
+        "image/*": [".png", ".jpg", ".jpeg"],
+        "text/plain": [".txt"]
+      }
+    }
+  ],
+  "protocol_handlers": [
+    {
+      "protocol": "web+yamkar",
+      "url": "/handle-protocol?url=%s"
+    }
+  ],
+  "share_target": {
+    "action": "/share-target",
+    "method": "GET",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url"
+    }
+  },
   "background_sync": {
-    "tags": ["sync-attendance", "sync-location"]
+    "tags": ["sync-attendance"],
+    "networkState": "any"
   },
   "periodic_sync": {
-    "tags": ["check-updates", "update-location"],
-    "minInterval": 120
+    "tags": ["daily-sync"],
+    "minInterval": 86400
   },
-  "offline_enabled": true,
   "permissions": [
     "notifications",
     "background-sync",
-    "periodic-sync",
-    "geolocation"
-  ],
-  "display_override": ["window-controls-overlay", "standalone", "minimal-ui"],
-  "handle_links": "preferred",
-  "edge_side_panel": {
-    "preferred_width": 400
-  }
+    "periodic-sync"
+  ]
 }
 

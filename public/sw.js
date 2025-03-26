@@ -1,23 +1,24 @@
 const CACHE_NAME = 'yamkar-v1';
-const OFFLINE_URL = '/offline.html';
-const ASSETS_TO_CACHE = [
+const STATIC_ASSETS = [
   '/',
-  '/offline.html',
   '/manifest.json',
+  '/favicon.ico',
   '/icons/icon-192x192.png',
   '/icons/icon-512x512.png',
   '/icons/maskable-192x192.png',
   '/icons/maskable-512x512.png',
-  '/styles/globals.css'
+  '/screenshots/home.png',
+  '/icons/attendance.png',
+  '/icons/reports.png'
 ];
 
-// Install event - cache basic assets
+// Install event - cache static assets
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then((cache) => cache.addAll(ASSETS_TO_CACHE))
+    caches.open(CACHE_NAME).then((cache) => {
+      return cache.addAll(STATIC_ASSETS);
+    })
   );
-  self.skipWaiting();
 });
 
 // Activate event - clean up old caches
@@ -25,220 +26,151 @@ self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((cacheNames) => {
       return Promise.all(
-        cacheNames.map((cacheName) => {
-          if (cacheName !== CACHE_NAME) {
-            return caches.delete(cacheName);
-          }
-        })
+        cacheNames
+          .filter((name) => name !== CACHE_NAME)
+          .map((name) => caches.delete(name))
       );
-    }).then(() => {
-      // Enable navigation preload if supported
-      if (self.registration.navigationPreload) {
-        return self.registration.navigationPreload.enable();
-      }
     })
   );
-  self.clients.claim();
 });
 
-// Fetch event - handle offline functionality
+// Fetch event - serve from cache, fallback to network
 self.addEventListener('fetch', (event) => {
-  if (event.request.mode === 'navigate') {
-    event.respondWith(
-      fetch(event.request).catch(() => {
-        return caches.match(OFFLINE_URL);
-      })
-    );
-    return;
-  }
-
   event.respondWith(
-    caches.match(event.request)
-      .then((response) => {
-        if (response) {
-          return response;
-        }
-
-        return fetch(event.request)
-          .then((response) => {
-            if (!response || response.status !== 200 || response.type !== 'basic') {
-              return response;
-            }
-
-            const responseToCache = response.clone();
-            caches.open(CACHE_NAME)
-              .then((cache) => {
-                cache.put(event.request, responseToCache);
-              });
-
-            return response;
-          })
-          .catch(() => {
-            if (event.request.destination === 'image') {
-              return caches.match('/icons/icon-192x192.png');
-            }
-          });
-      })
+    caches.match(event.request).then((response) => {
+      return response || fetch(event.request);
+    })
   );
 });
 
-// Background Sync
+// Background sync event
 self.addEventListener('sync', (event) => {
   if (event.tag === 'sync-attendance') {
     event.waitUntil(syncAttendance());
-  } else if (event.tag === 'sync-location') {
-    event.waitUntil(syncLocation());
   }
 });
 
-// Periodic Sync
+// Periodic sync event
 self.addEventListener('periodicsync', (event) => {
-  if (event.tag === 'check-updates') {
-    event.waitUntil(checkForUpdates());
-  } else if (event.tag === 'update-location') {
-    event.waitUntil(updateLocation());
+  if (event.tag === 'daily-sync') {
+    event.waitUntil(performDailySync());
   }
 });
 
-// Push Notifications
-self.addEventListener('push', (event) => {
-  const options = {
-    body: event.data.text(),
-    icon: '/icons/icon-192x192.png',
-    badge: '/icons/icon-96x96.png',
-    vibrate: [100, 50, 100],
-    data: {
-      dateOfArrival: Date.now(),
-      primaryKey: '1'
-    },
-    actions: [
-      {
-        action: 'explore',
-        title: 'View Details',
-        icon: '/icons/icon-72x72.png'
-      }
-    ]
-  };
-
-  event.waitUntil(
-    self.registration.showNotification('Yamkar', options)
-  );
+// File handling
+self.addEventListener('fetch', (event) => {
+  if (event.request.url.includes('/handle-file')) {
+    event.respondWith(handleFile(event.request));
+  }
 });
 
-// Notification Click
-self.addEventListener('notificationclick', (event) => {
-  event.notification.close();
-  event.waitUntil(
-    clients.openWindow('/')
-  );
+// Protocol handling
+self.addEventListener('fetch', (event) => {
+  if (event.request.url.startsWith('web+yamkar://')) {
+    event.respondWith(handleProtocol(event.request));
+  }
 });
 
-// Helper Functions
+// Share target handling
+self.addEventListener('fetch', (event) => {
+  if (event.request.url.includes('/share-target')) {
+    event.respondWith(handleShare(event.request));
+  }
+});
+
+// Helper functions
 async function syncAttendance() {
-  const records = await getAttendanceRecordsToSync();
-  if (records.length === 0) return;
-
   try {
-    const response = await fetch('/api/attendance/sync', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(records),
-    });
-
-    if (response.ok) {
-      await clearSyncedRecords();
-    }
-  } catch (error) {
-    console.error('Sync failed:', error);
-  }
-}
-
-async function syncLocation() {
-  try {
-    const location = await getCurrentLocation();
-    if (location) {
-      await fetch('/api/location/sync', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(location),
-      });
-    }
-  } catch (error) {
-    console.error('Location sync failed:', error);
-  }
-}
-
-async function updateLocation() {
-  try {
-    const location = await getCurrentLocation();
-    if (location) {
-      await fetch('/api/location/update', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(location),
-      });
-    }
-  } catch (error) {
-    console.error('Location update failed:', error);
-  }
-}
-
-async function checkForUpdates() {
-  try {
-    const response = await fetch('/api/version');
-    const data = await response.json();
+    const db = await openIndexedDB();
+    const pendingAttendance = await db.getAll('pendingAttendance');
     
-    if (data.updateAvailable) {
-      self.registration.showNotification('Update Available', {
-        body: 'A new version of Yamkar is available',
+    for (const attendance of pendingAttendance) {
+      await fetch('/api/attendance', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(attendance),
+      });
+      await db.delete('pendingAttendance', attendance.id);
+    }
+  } catch (error) {
+    console.error('Error syncing attendance:', error);
+  }
+}
+
+async function performDailySync() {
+  try {
+    // Sync any pending data
+    await syncAttendance();
+    
+    // Check for updates
+    const response = await fetch('/api/check-updates');
+    const updates = await response.json();
+    
+    if (updates.available) {
+      // Notify user about updates
+      self.registration.showNotification('Yamkar Update Available', {
+        body: 'A new version of Yamkar is available. Please refresh to update.',
         icon: '/icons/icon-192x192.png',
       });
     }
   } catch (error) {
-    console.error('Update check failed:', error);
+    console.error('Error performing daily sync:', error);
   }
 }
 
-async function getCurrentLocation() {
+async function handleFile(request) {
+  const url = new URL(request.url);
+  const fileType = url.searchParams.get('type');
+  const fileData = await request.blob();
+  
+  // Handle different file types
+  switch (fileType) {
+    case 'application/pdf':
+      return handlePDF(fileData);
+    case 'image/*':
+      return handleImage(fileData);
+    case 'text/plain':
+      return handleText(fileData);
+    default:
+      return new Response('Unsupported file type', { status: 400 });
+  }
+}
+
+async function handleProtocol(request) {
+  const url = new URL(request.url);
+  const data = url.searchParams.get('url');
+  
+  // Handle the protocol-specific data
+  return new Response('Protocol handled', { status: 200 });
+}
+
+async function handleShare(request) {
+  const url = new URL(request.url);
+  const title = url.searchParams.get('title');
+  const text = url.searchParams.get('text');
+  const sharedUrl = url.searchParams.get('url');
+  
+  // Handle the shared content
+  return new Response('Share handled', { status: 200 });
+}
+
+// IndexedDB setup
+async function openIndexedDB() {
   return new Promise((resolve, reject) => {
-    if (!navigator.geolocation) {
-      reject(new Error('Geolocation is not supported'));
-      return;
-    }
-
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        resolve({
-          latitude: position.coords.latitude,
-          longitude: position.coords.longitude,
-          accuracy: position.coords.accuracy,
-          timestamp: position.timestamp
-        });
-      },
-      (error) => {
-        reject(error);
-      },
-      {
-        enableHighAccuracy: true,
-        timeout: 5000,
-        maximumAge: 0
+    const request = indexedDB.open('yamkar-db', 1);
+    
+    request.onerror = () => reject(request.error);
+    request.onsuccess = () => resolve(request.result);
+    
+    request.onupgradeneeded = (event) => {
+      const db = event.target.result;
+      
+      // Create object stores
+      if (!db.objectStoreNames.contains('pendingAttendance')) {
+        db.createObjectStore('pendingAttendance', { keyPath: 'id' });
       }
-    );
+    };
   });
-}
-
-// IndexedDB helper functions for offline storage
-async function getAttendanceRecordsToSync() {
-  // Implementation for getting stored records
-  return [];
-}
-
-async function clearSyncedRecords() {
-  // Implementation for clearing synced records
 } 
