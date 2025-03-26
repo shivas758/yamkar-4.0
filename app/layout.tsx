@@ -41,13 +41,19 @@ export const metadata: Metadata = {
     follow: false,
   },
   generator: 'v0.dev',
-  themeColor: '#000000',
+  themeColor: '#4CAF50',
   appleWebApp: {
     capable: true,
     statusBarStyle: 'default',
     title: 'Yamkar',
   },
   applicationName: 'Yamkar',
+  icons: {
+    apple: [
+      { url: '/icons/icon-192x192.png', sizes: '192x192', type: 'image/png' },
+      { url: '/icons/icon-512x512.png', sizes: '512x512', type: 'image/png' },
+    ],
+  },
 }
 
 export const viewport = {

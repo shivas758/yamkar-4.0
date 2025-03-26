@@ -1,23 +1,24 @@
 {
-  "name": "Yamkar - Employee Management System",
+  "name": "Yamkar",
   "short_name": "Yamkar",
-  "description": "A comprehensive employee management system for agricultural businesses",
+  "description": "Agricultural Employee Management System",
   "start_url": "/",
   "id": "com.yamkar.app",
   "display": "standalone",
   "background_color": "#ffffff",
-  "theme_color": "#000000",
+  "theme_color": "#4CAF50",
   "orientation": "portrait",
-  "categories": ["business", "productivity"],
+  "categories": ["business", "productivity", "utilities"],
   "launch_handler": {
     "client_mode": ["focus-existing", "auto"]
   },
   "screenshots": [
     {
       "src": "/screenshots/home.png",
+      "sizes": "1080x1920",
       "type": "image/png",
-      "sizes": "1280x720",
-      "form_factor": "wide"
+      "platform": "narrow",
+      "label": "Home Screen"
     }
   ],
   "prefer_related_applications": false,
@@ -89,29 +90,25 @@
   ],
   "shortcuts": [
     {
-      "name": "Dashboard",
-      "url": "/",
+      "name": "Mark Attendance",
+      "short_name": "Attendance",
+      "description": "Mark attendance for employees",
+      "url": "/attendance",
       "icons": [{ "src": "/icons/icon-96x96.png", "sizes": "96x96" }]
     }
   ],
   "background_sync": {
-    "sync_entries": [
-      {
-        "id": "sync-attendance",
-        "url": "/api/attendance/sync",
-        "method": "POST"
-      }
-    ]
+    "tags": ["sync-attendance"]
   },
   "periodic_sync": {
-    "periodic_tasks": [
-      {
-        "name": "check-updates",
-        "frequency": "daily"
-      }
-    ]
+    "tags": ["check-updates"],
+    "minInterval": 86400
   },
   "offline_enabled": true,
-  "permissions": ["notifications", "background-sync", "periodic-sync"]
+  "permissions": [
+    "notifications",
+    "background-sync",
+    "periodic-sync"
+  ]
 }
 
