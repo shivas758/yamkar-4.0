@@ -98,17 +98,18 @@
     }
   ],
   "background_sync": {
-    "tags": ["sync-attendance"]
+    "tags": ["sync-attendance", "sync-location"]
   },
   "periodic_sync": {
-    "tags": ["check-updates"],
-    "minInterval": 86400
+    "tags": ["check-updates", "update-location"],
+    "minInterval": 300
   },
   "offline_enabled": true,
   "permissions": [
     "notifications",
     "background-sync",
-    "periodic-sync"
+    "periodic-sync",
+    "geolocation"
   ]
 }
 

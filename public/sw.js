@@ -86,6 +86,8 @@ self.addEventListener('fetch', (event) => {
 self.addEventListener('sync', (event) => {
   if (event.tag === 'sync-attendance') {
     event.waitUntil(syncAttendance());
+  } else if (event.tag === 'sync-location') {
+    event.waitUntil(syncLocation());
   }
 });
 
@@ -93,6 +95,8 @@ self.addEventListener('sync', (event) => {
 self.addEventListener('periodicsync', (event) => {
   if (event.tag === 'check-updates') {
     event.waitUntil(checkForUpdates());
+  } else if (event.tag === 'update-location') {
+    event.waitUntil(updateLocation());
   }
 });
 
@@ -151,6 +155,40 @@ async function syncAttendance() {
   }
 }
 
+async function syncLocation() {
+  try {
+    const location = await getCurrentLocation();
+    if (location) {
+      await fetch('/api/location/sync', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(location),
+      });
+    }
+  } catch (error) {
+    console.error('Location sync failed:', error);
+  }
+}
+
+async function updateLocation() {
+  try {
+    const location = await getCurrentLocation();
+    if (location) {
+      await fetch('/api/location/update', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(location),
+      });
+    }
+  } catch (error) {
+    console.error('Location update failed:', error);
+  }
+}
+
 async function checkForUpdates() {
   try {
     const response = await fetch('/api/version');
@@ -165,6 +203,34 @@ async function checkForUpdates() {
   } catch (error) {
     console.error('Update check failed:', error);
   }
+}
+
+async function getCurrentLocation() {
+  return new Promise((resolve, reject) => {
+    if (!navigator.geolocation) {
+      reject(new Error('Geolocation is not supported'));
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        resolve({
+          latitude: position.coords.latitude,
+          longitude: position.coords.longitude,
+          accuracy: position.coords.accuracy,
+          timestamp: position.timestamp
+        });
+      },
+      (error) => {
+        reject(error);
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 5000,
+        maximumAge: 0
+      }
+    );
+  });
 }
 
 // IndexedDB helper functions for offline storage
