@@ -4,7 +4,7 @@
   "description": "Agricultural Employee Management System",
   "start_url": "/",
   "id": "com.yamkar.app",
-  "display": "standalone",
+  "display": "fullscreen",
   "background_color": "#ffffff",
   "theme_color": "#4CAF50",
   "orientation": "portrait",

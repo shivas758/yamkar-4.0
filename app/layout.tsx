@@ -29,12 +29,16 @@ export const metadata: Metadata = {
   icons: {
     icon: "/favicon.ico",
     shortcut: "/favicon-16x16.png",
-    apple: "/apple-touch-icon.png",
+    apple: [
+      { url: '/icons/icon-192x192.png', sizes: '192x192', type: 'image/png' },
+      { url: '/icons/icon-512x512.png', sizes: '512x512', type: 'image/png' },
+    ],
   },
   viewport: {
     width: "device-width",
     initialScale: 1,
     maximumScale: 1,
+    userScalable: false,
   },
   robots: {
     index: false,
@@ -44,16 +48,10 @@ export const metadata: Metadata = {
   themeColor: '#4CAF50',
   appleWebApp: {
     capable: true,
-    statusBarStyle: 'default',
+    statusBarStyle: 'black-translucent',
     title: 'Yamkar',
   },
   applicationName: 'Yamkar',
-  icons: {
-    apple: [
-      { url: '/icons/icon-192x192.png', sizes: '192x192', type: 'image/png' },
-      { url: '/icons/icon-512x512.png', sizes: '512x512', type: 'image/png' },
-    ],
-  },
 }
 
 export const viewport = {
@@ -72,10 +70,15 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <head>
         <link rel="manifest" href="/manifest.json" />
-        <meta name="theme-color" content="#000000" />
+        <meta name="theme-color" content="#4CAF50" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
-        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
         <meta name="apple-mobile-web-app-title" content="Yamkar" />
+        <meta name="mobile-web-app-capable" content="yes" />
+        <meta name="application-name" content="Yamkar" />
+        <meta name="msapplication-TileColor" content="#4CAF50" />
+        <meta name="msapplication-tap-highlight" content="no" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
       </head>
       <body className={inter.className}>
         <AuthProvider>
