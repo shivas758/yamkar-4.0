@@ -83,7 +83,7 @@ export default function RootLayout({
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
         <meta name="format-detection" content="telephone=no" />
         <meta name="display" content="standalone" />
-        <meta name="display-override" content="window-controls-overlay, minimal-ui" />
+        <meta name="display-override" content="minimal-ui" />
         <style>{`
           :root {
             --safe-area-inset-top: env(safe-area-inset-top);
