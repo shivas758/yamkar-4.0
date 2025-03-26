@@ -86,14 +86,14 @@
       "short_name": "Attendance",
       "description": "Mark attendance",
       "url": "/attendance",
-      "icons": [{ "src": "/icons/attendance.png", "sizes": "192x192" }]
+      "icons": [{ "src": "/icons/icon-96x96.png", "sizes": "96x96" }]
     },
     {
       "name": "Reports",
       "short_name": "Reports",
       "description": "View reports",
       "url": "/reports",
-      "icons": [{ "src": "/icons/reports.png", "sizes": "192x192" }]
+      "icons": [{ "src": "/icons/icon-96x96.png", "sizes": "96x96" }]
     }
   ],
   "file_handlers": [
