@@ -91,7 +91,7 @@ export default function RootLayout({
             --safe-area-inset-left: env(safe-area-inset-left);
             --safe-area-inset-right: env(safe-area-inset-right);
           }
-          html, body {
+          html {
             height: 100%;
             width: 100%;
             margin: 0;
@@ -101,6 +101,13 @@ export default function RootLayout({
             -webkit-overflow-scrolling: touch;
           }
           body {
+            height: 100%;
+            width: 100%;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            position: fixed;
+            -webkit-overflow-scrolling: touch;
             padding-top: var(--safe-area-inset-top);
             padding-bottom: var(--safe-area-inset-bottom);
             padding-left: var(--safe-area-inset-left);
@@ -111,6 +118,11 @@ export default function RootLayout({
             width: 100%;
             overflow-y: auto;
             -webkit-overflow-scrolling: touch;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
           }
         `}</style>
       </head>
