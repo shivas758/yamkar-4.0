@@ -82,16 +82,35 @@ export default function RootLayout({
         <meta name="msapplication-tap-highlight" content="no" />
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
         <meta name="format-detection" content="telephone=no" />
-        <meta name="display" content="standalone" />
-        <meta name="display-override" content="minimal-ui" />
+        <meta name="display" content="fullscreen" />
+        <meta name="display-override" content="standalone, minimal-ui" />
         <style>{`
           :root {
             --safe-area-inset-top: env(safe-area-inset-top);
             --safe-area-inset-bottom: env(safe-area-inset-bottom);
+            --safe-area-inset-left: env(safe-area-inset-left);
+            --safe-area-inset-right: env(safe-area-inset-right);
+          }
+          html, body {
+            height: 100%;
+            width: 100%;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            position: fixed;
+            -webkit-overflow-scrolling: touch;
           }
           body {
             padding-top: var(--safe-area-inset-top);
             padding-bottom: var(--safe-area-inset-bottom);
+            padding-left: var(--safe-area-inset-left);
+            padding-right: var(--safe-area-inset-right);
+          }
+          #__next {
+            height: 100%;
+            width: 100%;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
           }
         `}</style>
       </head>
